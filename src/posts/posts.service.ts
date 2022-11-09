@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException, Logger } from '@nestjs/common';
 import { PostModel } from './posts/posts.interface';
 
 @Injectable()
 export class PostsService {
+  [x: string]: any;
   private posts: Array<PostModel> = [];
 
   public findAll(): Array<PostModel> {
@@ -38,6 +39,39 @@ export class PostsService {
     this.posts.push(blogPost);
 
     return blogPost;
-    
+  }
+
+  public delete(id: number): void {
+    const index: number = this.posts.findIndex(post => post.id === id);
+
+    if (index === -1) {
+      throw new NotFoundException('Post not found.');
+    }
+    this.posts.splice(index, 1);
+  }
+
+  public update(id: number, post: PostModel): PostModel {
+    this.logger.log('Updating post with id: ${id}');
+
+    const index: number = this.posts.findIndex((post) => post.id ===id);
+
+    if (index === -1) {
+      throw new NotFoundException('Post not found.');
+    }
+
+    const titleExists: boolean = this.posts.some(
+      (item) => item.title === post.title && item.id !== id,
+    );
+    if (titleExists) {
+      throw new UnprocessableEntityException('Post title already exits.');
+    }
+
+    const blogPost: PostModel = {
+      ...post,
+      id,
+    };
+
+    this.posts[index] = blogPost;
+    return blogPost;
   }
 }
