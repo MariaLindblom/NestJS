@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { PostModel } from './posts/posts.interface';
 
 @Injectable()
@@ -17,5 +17,27 @@ export class PostsService {
     }
 
     return post;
+  }
+
+  public create(post: PostModel): PostModel {
+    const titleExists: boolean = this.posts.some(
+      item => item.title === post.title,
+    );
+    if (titleExists) {
+      throw new UnprocessableEntityException('Post title already exits.');
+    }
+
+    const maxId: number = Math.max(...this.posts.map((post) => post.id), 0);
+    const id: number = maxId + 1;
+
+    const blogPost: PostModel = {
+      ...post,
+      id,
+    };
+
+    this.posts.push(blogPost);
+
+    return blogPost;
+    
   }
 }
