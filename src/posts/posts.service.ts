@@ -1,12 +1,13 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException, Logger } from '@nestjs/common';
 import { PostModel } from './posts/posts.interface';
 
 @Injectable()
 export class PostsService {
-  [x: string]: any;
   private posts: Array<PostModel> = [];
+  private readonly logger = new Logger(PostsService.name);
 
   public findAll(): Array<PostModel> {
+    this.logger.log('Returning all posts.');
     return this.posts;
   }
 
