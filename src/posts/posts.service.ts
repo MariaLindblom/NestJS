@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnprocessableEntityException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { PostModel } from './posts/posts.interface';
 
 @Injectable()
@@ -51,7 +51,7 @@ export class PostsService {
   }
 
   public update(id: number, post: PostModel): PostModel {
-    this.logger.log('Updating post with id: ${id}');
+    this.logger.log(`Updating post with id: ${id}`);
 
     const index: number = this.posts.findIndex((post) => post.id ===id);
 
@@ -63,7 +63,7 @@ export class PostsService {
       (item) => item.title === post.title && item.id !== id,
     );
     if (titleExists) {
-      throw new UnprocessableEntityException('Post title already exits.');
+      throw new UnprocessableEntityException('Post title already exists.');
     }
 
     const blogPost: PostModel = {
