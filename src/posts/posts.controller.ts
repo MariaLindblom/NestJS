@@ -1,10 +1,12 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Body, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post, Body, Delete, Put, UseFilters } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostModel } from './posts/posts.interface';
 import { ApiTags, ApiOkResponse, ApiNotFoundResponse, ApiCreatedResponse, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
+import { HttpExceptionFilter } from '../filters/http-exception.filter';
 
 @Controller('posts')
 @ApiTags('posts')
+@UseFilters(HttpExceptionFilter)
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
@@ -39,9 +41,11 @@ export class PostsController {
   @ApiOkResponse({ description: 'Post updated successfully.' })
   @ApiNotFoundResponse({ description: 'Post not found.' })
   @ApiUnprocessableEntityResponse({ description: 'Post title already exists.' })
-  public update(@Param('id', ParseIntPipe) id: number, @Body() post: PostModel): PostModel {
-    return this.postsService.update(id, post);
-  }
+  public update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() post: PostModel): PostModel {
+      return this.postsService.update(id, post);
+    }
 }
 
 /**

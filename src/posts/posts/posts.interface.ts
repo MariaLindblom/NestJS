@@ -1,13 +1,5 @@
 import { ApiPropertyOptional, ApiProperty } from "@nestjs/swagger";
 
-export interface PostModel {
-  id?: number;
-  date: Date;
-  title: string;
-  body: string;
-  category: string;
-}
-
 export class PostModel {
   @ApiPropertyOptional({ type: Number })
   id?: number;
