@@ -1,6 +1,6 @@
 <?php
 try {
-  $dbh = new PDO('mysql:host=harjoitus.mysql.database.azure.com:3306;dbname=harkka', 'empirica', 'XV1qWdfBg6ql4sLG');
+  $dbh = new PDO('');
   foreach($dbh->query('SELECT * FROM harkka.posts') as $row) {
     print_r($row);
   }

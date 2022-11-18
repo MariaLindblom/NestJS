@@ -1,9 +1,9 @@
 <?php
 
-$servername = "harjoitus.mysql.database.azure.com:3306";
-$database= "harkka";
-$username = "emirica";
-$password = "XV1qWdfBg6ql4sLG";
+$servername = "";
+$database= "";
+$username = "";
+$password = "";
 
 $conn = new mysqli($servername, $username, $password, $database);
 
