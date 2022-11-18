@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PostsModule } from './posts/posts.module';
-import dbconfig from "../../dbconfig.json";
+import dbconfig from "dbconfig.json";
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
