@@ -12,15 +12,17 @@ export class PostsController {
 
   @Get()
   @ApiOkResponse({ description: 'Posts retrieved successfully.' })
-  public findAll(): Array<PostModel> {
+  findAll() {
+  //public findAll(): Array<PostModel>
     return this.postsService.findAll();
   }
 
   @Get(':id')
   @ApiOkResponse({ description: 'Post retrieved successfully.' })
   @ApiNotFoundResponse({ description: 'Post not found.' })
-  public findOne(@Param('id', ParseIntPipe) id: number): PostModel {
-    return this.postsService.findOne(id);
+  findOne(@Param('id') id: string) {
+  //public findOne(@Param('id', ParseIntPipe) id: number): PostModel {
+    return this.postsService.findOne(+id);
   }
 
   @Post()

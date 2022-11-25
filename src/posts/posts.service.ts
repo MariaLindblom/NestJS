@@ -1,19 +1,62 @@
 import { Injectable, NotFoundException, UnprocessableEntityException, Logger } from '@nestjs/common';
 import { PostModel } from './posts/posts.interface';
-//import { InjectRepository } from '@nestjs/typeorm';
-//import { Posts } from './posts.entity';
+import { InjectRepository, InjectEntityManager, InjectDataSource } from '@nestjs/typeorm';
+import { Posts } from './posts.entity';
+import { DataSource, EntityManager, getConnection, Repository } from 'typeorm';
 
 @Injectable()
 export class PostsService {
+  constructor(
+    @InjectRepository(Posts) private postRepository: Repository<Posts>,
+    @InjectEntityManager() private postManager: EntityManager,
+    @InjectDataSource() private dataSource: DataSource
+  ) { }
+
+
   private posts: Array<PostModel> = [];
   private readonly logger = new Logger(PostsService.name);
 
-  public findAll(): Array<PostModel> {
+  /**
+   * prevoius finall() function
+   * public findAll(): Array<PostModel> {
     this.logger.log('Returning all posts.');
     return this.posts;
+  }**/
+  async findAll() {
+    this.logger.log('Returning all posts.')
+    await this.dataSource.createQueryBuilder(Posts, "posts")
+    .getMany();
   }
 
-  public findOne(id: number): PostModel {
+  async findOne(id: number) {
+    const postWithRepository = await this.postRepository.findOneBy({ id });
+
+    const postWithQueryBuilder = await this.postRepository
+      .createQueryBuilder("posts")
+      .where("post.id= :postId", { postId: id })
+      .getOne()
+
+    const postFromEntityManager = await this.postManager
+      .createQueryBuilder(Posts, "posts")
+      .where("post.id= :postId", { postId: id })
+      .getOne()
+
+    const postFromDataSource = await this.dataSource
+      .createQueryBuilder()
+      .select("posts")
+      .from(Posts, "posts")
+      .where("post.id= :postId", { postId: id })
+      .getOne()
+
+      return {
+        postWithRepository,
+        postWithQueryBuilder,
+        postFromEntityManager,
+        postFromDataSource
+      };
+  }
+
+  /**public findOne(id: number): PostModel {
     const post: PostModel = this.posts.find(post => post.id === id);
 
     if (!post) {
@@ -21,7 +64,7 @@ export class PostsService {
     }
 
     return post;
-  }
+  }**/
 
   public create(post: PostModel): PostModel {
     const titleExists: boolean = this.posts.some(
