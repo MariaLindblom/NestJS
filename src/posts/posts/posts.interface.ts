@@ -3,7 +3,7 @@ import { ApiPropertyOptional, ApiProperty } from "@nestjs/swagger";
 export class PostModel {
   @ApiPropertyOptional({ type: Number })
   id?: number;
-  @ApiProperty({ type: String, format: 'date-time' })
+  @ApiProperty({ type: Date, format: 'date' })
   date: Date;
   @ApiProperty({ type: String })
   title: string;

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { Posts } from '././posts/posts.entity';
 import * as dbconfig from "dbconfig.json";
 
 @Module({
@@ -14,7 +15,7 @@ import * as dbconfig from "dbconfig.json";
       username: dbconfig.username,
       password: dbconfig.password,
       database: dbconfig.database,
-      entities: [],
+      entities: [Posts],
       synchronize: true,
     }),
   ],
