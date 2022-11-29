@@ -1,72 +1,43 @@
 import { Injectable, NotFoundException, UnprocessableEntityException, Logger } from '@nestjs/common';
 import { PostModel } from './posts/posts.interface';
-import { InjectRepository, InjectEntityManager, InjectDataSource } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Posts } from './posts.entity';
-import { DataSource, EntityManager, getConnection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { PostQueries } from './posts.queries';
 
 @Injectable()
 export class PostsService {
   constructor(
-    @InjectRepository(Posts) private postRepository: Repository<Posts>,
-    @InjectEntityManager() private postManager: EntityManager,
-    @InjectDataSource() private dataSource: DataSource
-  ) { }
+    @InjectRepository(Posts) private postRepository: Repository<Posts>
+    ) { }
 
 
   private posts: Array<PostModel> = [];
   private readonly logger = new Logger(PostsService.name);
-
-  /**
-   * prevoius finall() function
-   * public findAll(): Array<PostModel> {
+  
+  /*async findAll() {
     this.logger.log('Returning all posts.');
-    return this.posts;
-  }**/
-  async findAll() {
-    this.logger.log('Returning all posts.')
     await this.dataSource.createQueryBuilder(Posts, "posts")
     .getMany();
+    const posts = this.postRepository.find();
+    return posts;
+  }*/
+  public findAll = async () => {
+    this.logger.log('Returning all posts.');
+    const posts = this.postRepository.find();
+    return posts;
   }
-
-  async findOne(id: number) {
-    const postWithRepository = await this.postRepository.findOneBy({ id });
-
-    const postWithQueryBuilder = await this.postRepository
-      .createQueryBuilder("posts")
-      .where("post.id= :postId", { postId: id })
-      .getOne()
-
-    const postFromEntityManager = await this.postManager
-      .createQueryBuilder(Posts, "posts")
-      .where("post.id= :postId", { postId: id })
-      .getOne()
-
-    const postFromDataSource = await this.dataSource
-      .createQueryBuilder()
-      .select("posts")
-      .from(Posts, "posts")
-      .where("post.id= :postId", { postId: id })
-      .getOne()
-
-      return {
-        postWithRepository,
-        postWithQueryBuilder,
-        postFromEntityManager,
-        postFromDataSource
-      };
-  }
-
-  /**public findOne(id: number): PostModel {
-    const post: PostModel = this.posts.find(post => post.id === id);
-
+  
+  public findOne = async(id: number) => {
+    const post = await this.postRepository.findOneBy({ id });
     if (!post) {
       throw new NotFoundException('Post not found');
     }
-
+    this.logger.log(`Returning post with id: ${id}`);
     return post;
-  }**/
+  }
 
-  public create(post: PostModel): PostModel {
+  public create = async(post: PostModel) => {
     const titleExists: boolean = this.posts.some(
       item => item.title === post.title,
     );
@@ -87,7 +58,7 @@ export class PostsService {
     return blogPost;
   }
 
-  public delete(id: number): void {
+  public delete = async(id: number) => {
     const index: number = this.posts.findIndex(post => post.id === id);
 
     if (index === -1) {
@@ -96,9 +67,7 @@ export class PostsService {
     this.posts.splice(index, 1);
   }
 
-  public update(id: number, post: PostModel): PostModel {
-    this.logger.log(`Updating post with id: ${id}`);
-
+  public update = async(id: number, post: PostModel) => {
     const index: number = this.posts.findIndex((post) => post.id ===id);
 
     if (index === -1) {
@@ -117,6 +86,7 @@ export class PostsService {
       id,
     };
 
+    this.logger.log(`Updating post with id: ${id}`);
     this.posts[index] = blogPost;
     return blogPost;
   }

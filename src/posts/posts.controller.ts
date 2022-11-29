@@ -13,22 +13,20 @@ export class PostsController {
   @Get()
   @ApiOkResponse({ description: 'Posts retrieved successfully.' })
   findAll() {
-  //public findAll(): Array<PostModel>
     return this.postsService.findAll();
   }
 
   @Get(':id')
   @ApiOkResponse({ description: 'Post retrieved successfully.' })
   @ApiNotFoundResponse({ description: 'Post not found.' })
-  findOne(@Param('id') id: string) {
-  //public findOne(@Param('id', ParseIntPipe) id: number): PostModel {
-    return this.postsService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.postsService.findOne(id);
   }
 
   @Post()
   @ApiCreatedResponse({ description: 'Post created successfully.' })
   @ApiUnprocessableEntityResponse({ description: 'Post title already exists.' })
-  public create(@Body() post: PostModel): PostModel {
+  public create(@Body() post: PostModel) {
     return this.postsService.create(post);
   }
 
@@ -45,7 +43,7 @@ export class PostsController {
   @ApiUnprocessableEntityResponse({ description: 'Post title already exists.' })
   public update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() post: PostModel): PostModel {
+    @Body() post: PostModel) {
       return this.postsService.update(id, post);
     }
 }
