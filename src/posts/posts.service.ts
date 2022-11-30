@@ -3,7 +3,7 @@ import { PostModel } from './posts/posts.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Posts } from './posts.entity';
 import { Repository } from 'typeorm';
-import { PostQueries } from './posts.queries';
+import { title } from 'process';
 
 @Injectable()
 export class PostsService {
@@ -11,20 +11,19 @@ export class PostsService {
     @InjectRepository(Posts) private postRepository: Repository<Posts>
     ) { }
 
-
   private posts: Array<PostModel> = [];
   private readonly logger = new Logger(PostsService.name);
-  
-  /*async findAll() {
-    this.logger.log('Returning all posts.');
-    await this.dataSource.createQueryBuilder(Posts, "posts")
-    .getMany();
-    const posts = this.postRepository.find();
-    return posts;
+
+  /*public testPost = async (PostQueries) => {
+    
+    await this.postRepository.save(PostQueries);
+    this.logger.log('Testing if this works...');
+    return PostQueries;
   }*/
+  
   public findAll = async () => {
-    this.logger.log('Returning all posts.');
     const posts = this.postRepository.find();
+    this.logger.log('Returning all posts.');
     return posts;
   }
   
@@ -38,9 +37,10 @@ export class PostsService {
   }
 
   public create = async(post: PostModel) => {
-    const titleExists: boolean = this.posts.some(
-      item => item.title === post.title,
-    );
+    const titleExists = await this.postRepository.findOneBy({ title });
+    /*const titleExists: boolean = this.posts.some(
+      title => .title === post.title,
+    );*/
     if (titleExists) {
       throw new UnprocessableEntityException('Post title already exits.');
     }
@@ -54,20 +54,26 @@ export class PostsService {
     };
 
     this.posts.push(blogPost);
-
+    this.logger.log('Created a new post.');
+    this.postRepository.save(blogPost);
     return blogPost;
   }
 
   public delete = async(id: number) => {
-    const index: number = this.posts.findIndex(post => post.id === id);
+    //const index = await this.postRepository.findOneBy({ id });
+    //const index: number = this.posts.findIndex(post => post.id === id);
 
-    if (index === -1) {
+    if (id === -1) {
       throw new NotFoundException('Post not found.');
     }
-    this.posts.splice(index, 1);
+    this.posts.splice(id, 1);
+    this.logger.log('Deleted a post.');
+    await this.postRepository.delete(id);
   }
 
   public update = async(id: number, post: PostModel) => {
+    //const editedPost = await this.postRepository.findOneBy({ id });
+    //if (!editedPost)
     const index: number = this.posts.findIndex((post) => post.id ===id);
 
     if (index === -1) {
@@ -86,8 +92,9 @@ export class PostsService {
       id,
     };
 
-    this.logger.log(`Updating post with id: ${id}`);
     this.posts[index] = blogPost;
+    this.logger.log(`Updating post with id: ${id}`);
+    await this.postRepository.save(blogPost);
     return blogPost;
   }
 }
