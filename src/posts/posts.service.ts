@@ -13,13 +13,6 @@ export class PostsService {
 
   private posts: Array<PostModel> = [];
   private readonly logger = new Logger(PostsService.name);
-
-  /*public testPost = async (PostQueries) => {
-    
-    await this.postRepository.save(PostQueries);
-    this.logger.log('Testing if this works...');
-    return PostQueries;
-  }*/
   
   public findAll = async () => {
     const posts = this.postRepository.find();
@@ -38,9 +31,6 @@ export class PostsService {
 
   public create = async(post: PostModel) => {
     const titleExists = await this.postRepository.findOneBy({ title });
-    /*const titleExists: boolean = this.posts.some(
-      title => .title === post.title,
-    );*/
     if (titleExists) {
       throw new UnprocessableEntityException('Post title already exits.');
     }
@@ -60,9 +50,6 @@ export class PostsService {
   }
 
   public delete = async(id: number) => {
-    //const index = await this.postRepository.findOneBy({ id });
-    //const index: number = this.posts.findIndex(post => post.id === id);
-
     if (id === -1) {
       throw new NotFoundException('Post not found.');
     }
@@ -71,18 +58,12 @@ export class PostsService {
     await this.postRepository.delete(id);
   }
 
-  public update = async(id: number, post: PostModel) => {
-    //const editedPost = await this.postRepository.findOneBy({ id });
-    //if (!editedPost)
-    const index: number = this.posts.findIndex((post) => post.id ===id);
-
-    if (index === -1) {
+  public update = async(id: number, title: string, post: PostModel) => {
+    if (id === -1) {
       throw new NotFoundException('Post not found.');
     }
 
-    const titleExists: boolean = this.posts.some(
-      (item) => item.title === post.title && item.id !== id,
-    );
+    const titleExists = await this.postRepository.findOneBy({ title });
     if (titleExists) {
       throw new UnprocessableEntityException('Post title already exists.');
     }
@@ -92,7 +73,7 @@ export class PostsService {
       id,
     };
 
-    this.posts[index] = blogPost;
+    this.posts[id] = blogPost;
     this.logger.log(`Updating post with id: ${id}`);
     await this.postRepository.save(blogPost);
     return blogPost;

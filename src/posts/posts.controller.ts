@@ -3,6 +3,7 @@ import { PostsService } from './posts.service';
 import { PostModel } from './posts/posts.interface';
 import { ApiTags, ApiOkResponse, ApiNotFoundResponse, ApiCreatedResponse, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '../filters/http-exception.filter';
+import { title } from 'process';
 
 @Controller('posts')
 @ApiTags('posts')
@@ -44,10 +45,6 @@ export class PostsController {
   public update(
     @Param('id', ParseIntPipe) id: number,
     @Body() post: PostModel) {
-      return this.postsService.update(id, post);
+      return this.postsService.update(id, title, post);
     }
 }
-
-/**
- * kommentti
-*/
