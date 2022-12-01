@@ -58,7 +58,7 @@ export class PostsService {
     await this.postRepository.delete(id);
   }
 
-  public update = async(id: number, title: string, post: PostModel) => {
+  public update = async(id: number, post: PostModel) => {
     if (id === -1) {
       throw new NotFoundException('Post not found.');
     }
